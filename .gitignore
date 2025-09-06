@@ -1,0 +1,70 @@
+# ---- .NET / Visual Studio ----
+bin/
+obj/
+out/
+*.user
+*.rsuser
+*.suo
+*.cache
+*.pdb
+*.log
+*.vs/
+.vscode/
+.vsconfig
+
+# ---- Build artifacts ----
+*.dll
+*.exe
+*.app
+*.db
+*.db-shm
+*.db-wal
+
+# ---- Config files ----
+appsettings.*.json
+!appsettings.json   # mantén el base genérico
+
+# ---- Docker ----
+*.pid
+*.seed
+docker-compose.override.yml
+.docker/
+
+# ---- MySQL ----
+*.sql
+*.bak
+*.tar
+*.gz
+
+# ---- OS / Editor ----
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# ---- Logs / Temp ----
+*.swp
+*.tmp
+*.temp
+*.pid
+*.pid.lock
+logs/
+*.log
+
+# ---- Rider / JetBrains ----
+.idea/
+
+# ---- Coverage / Testing ----
+coverage/
+*.coverage
+*.coveragexml
+TestResult*/
