@@ -16,4 +16,8 @@
     <ProjectReference Include="..\eventos_qr.DAL\eventos_qr.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\adminkit\" />
+  </ItemGroup>
+
 </Project>

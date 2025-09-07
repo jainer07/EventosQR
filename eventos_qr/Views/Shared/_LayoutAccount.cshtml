@@ -2,20 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Jainer Avila">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="shortcut icon" href="img/icons/icon-48x48.png" />
-    <link rel="canonical" href="https://demo-basic.adminkit.io/" />
-
     <title>@ViewData["Title"] - eventos</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/app.css">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/eventos_qr.styles.css" asp-append-version="true" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- AdminKit CSS -->
+    <link rel="stylesheet" href="~/adminkit/css/app.css" asp-append-version="true" />
 </head>
 <body>
     <main class="d-flex w-100">
@@ -26,10 +19,12 @@
         </div>
     </main>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/app.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- AdminKit JS (incluye Bootstrap, Feather, etc.) -->
+    <script src="~/adminkit/js/app.js" asp-append-version="true"></script>
+
+    @* Por si acaso, fuerza el reemplazo de Feather *@
+    <script> if (window.feather && feather.replace) feather.replace(); </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

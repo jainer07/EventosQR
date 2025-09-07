@@ -1,4 +1,7 @@
-﻿using eventos_qr.DAL;
+﻿using eventos_qr.BLL.Contracts;
+using eventos_qr.BLL.repositories;
+using eventos_qr.DAL;
+using eventos_qr.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +12,7 @@ namespace eventos_qr.BLL
     {
         public static void AddRegisterEventosQR_DbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var main_cs = configuration.GetConnectionString("eventos_qr_db");
+            var main_cs = configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<EventosQR_Contex>(builder =>
             {
@@ -23,6 +26,10 @@ namespace eventos_qr.BLL
 
         public static void AddRepositories(this IServiceCollection services)
         {
+            services.AddScoped<IEventoRepository, EventoRepository>();
+
+            // Query services
+            services.AddScoped<EventoQueryService>();
         }
     }
 }
