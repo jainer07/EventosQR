@@ -1,0 +1,114 @@
+﻿@model PersonaViewModel
+@{
+    ViewData["Title"] = "Editar persona";
+}
+
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert modern alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    @ViewBag.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form asp-action="Edit" method="post" class="row g-3">
+                <input type="hidden" asp-for="IdPersona" />
+                <input type="hidden" asp-for="RowVersion" value="@Model.RowVersion" />
+
+                <div class="col-md-6">
+                    <label class="form-label">Nombres</label>
+                    <input asp-for="Nombres" class="form-control" />
+                    <span asp-validation-for="Nombres" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Apellidos</label>
+                    <input asp-for="Apellidos" class="form-control" />
+                    <span asp-validation-for="Apellidos" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tipo documento</label>
+                    <select asp-for="TipoDocumento" class="form-select">
+                        <option value="1">Cédula de ciudadanía</option>
+                        <option value="2">Cédula de extrangería</option>
+                        <option value="3">NIT</option>
+                        <option value="4">PAS</option>
+                    </select>
+                    <span asp-validation-for="TipoDocumento" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Número de documento</label>
+                    <input asp-for="NumeroDocumento" class="form-control" />
+                    <span asp-validation-for="NumeroDocumento" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Celular</label>
+                    <input asp-for="Celular" class="form-control" />
+                    <span asp-validation-for="Celular" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Correo</label>
+                    <input asp-for="Correo" class="form-control" />
+                    <span asp-validation-for="Correo" class="text-danger"></span>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script> if (window.feather?.replace) feather.replace(); </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss alerts after specified time
+            const alerts = document.querySelectorAll('.alert.auto-dismiss[data-auto-dismiss]');
+
+            alerts.forEach(alert => {
+                const dismissTime = parseInt(alert.dataset.autoDismiss) || 5000; // Default 5 seconds
+
+                // Create progress bar
+                const progressBar = document.createElement('div');
+                progressBar.className = 'alert-progress-bar';
+                progressBar.style.cssText = `
+                    animation: shrink ${dismissTime}ms linear forwards;
+                `;
+                alert.appendChild(progressBar);
+
+                // Auto dismiss
+               setTimeout(() => {
+                    if (alert && alert.parentNode) {
+                        alert.classList.remove('show');
+                        setTimeout(() => {
+                            if (alert && alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 150);
+                    }
+                }, dismissTime);
+            });
+
+            document.querySelectorAll('.btn-close[data-bs-dismiss="alert"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const alert = this.closest('.alert');
+                    if (alert) {
+                        alert.classList.remove('show');
+                        setTimeout(() => {
+                            if (alert && alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 150);
+                    }
+                });
+            });
+        });
+    </script>
+}

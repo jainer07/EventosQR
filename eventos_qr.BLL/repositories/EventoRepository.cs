@@ -3,6 +3,7 @@ using eventos_qr.BLL.Mapper;
 using eventos_qr.BLL.Models;
 using eventos_qr.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace eventos_qr.BLL.repositories
 {
@@ -52,8 +53,7 @@ namespace eventos_qr.BLL.repositories
             if (evento is null)
                 throw new ArgumentNullException(nameof(evento), "El evento no puede ser nulo.");
 
-            var existe = await _eventoQuery.ObtenerAsync(evento.IdEvento);
-
+            var existe = await ObtenerAsync(evento.IdEvento);
             if (existe != null)
                 throw new InvalidOperationException($"El evento con ID {evento.IdEvento} ya existe.");
 
@@ -78,7 +78,7 @@ namespace eventos_qr.BLL.repositories
             if (id != evento.IdEvento)
                 throw new ArgumentException("El ID del evento no coincide con el ID proporcionado.", nameof(id));
 
-            var existe = await _eventoQuery.ObtenerAsync(id) ?? throw new KeyNotFoundException($"El evento con ID {id} no existe.");
+            var existe = await ObtenerAsync(id) ?? throw new KeyNotFoundException($"El evento con ID {id} no existe.");
 
             existe.Nombre = evento.Nombre;
             existe.Fecha = evento.Fecha;
@@ -86,14 +86,16 @@ namespace eventos_qr.BLL.repositories
             existe.PrecioUnitario = evento.PrecioUnitario;
             existe.Vendidas = evento.Vendidas;
 
+            var entity = _mapper.EventoModelMapper(evento);
+
             try
             {
-                return await _eventoQuery.ActualizarAsync(existe, evento.RowVersion);
+                return await _eventoQuery.ActualizarAsync(entity, evento.RowVersion);
             }
             catch (DbUpdateConcurrencyException ex)
             {
                 // Mensaje claro para conflicto de concurrencia
-                throw new ApplicationException("El evento fue modificado o eliminado por otro proceso.", ex);
+                throw new ApplicationException("Conflicto al actualizar el evento. Es posible que los datos hayan sido modificados por otro usuario.", ex);
             }
             catch (Exception ex)
             {
@@ -109,11 +111,10 @@ namespace eventos_qr.BLL.repositories
                 if (id <= 0)
                     throw new ArgumentException("El ID del evento debe ser un número positivo.", nameof(id));
 
-                var existe = await _eventoQuery.ObtenerAsync(id);
-                if (existe == null)
-                    throw new KeyNotFoundException($"El evento con ID {id} no existe.");
+                var existe = await ObtenerAsync(id) ?? throw new KeyNotFoundException($"El evento con ID {id} no existe.");
 
-                return await _eventoQuery.EliminarAsync(existe);
+                var entity = _mapper.EventoModelMapper(existe);
+                return await _eventoQuery.EliminarAsync(entity);
             }
             catch (Exception ex)
             {

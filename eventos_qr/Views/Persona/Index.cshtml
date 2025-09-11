@@ -1,0 +1,93 @@
+﻿@model IEnumerable<PersonaViewModel>
+@{
+    ViewData["Title"] = "Personas";
+    var page = (int)(ViewBag.Page ?? 1);
+    var total = (int)(ViewBag.Total ?? Model.Count());
+    var pageSize = (int)(ViewBag.PageSize ?? 10);
+    var q = (string)(ViewBag.Query ?? string.Empty);
+    int pages = (int)Math.Ceiling((double)total / pageSize);
+}
+
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show auto-dismiss modern" role="alert" data-auto-dismiss="4000">
+                    <div class="alert-message">
+                        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" class="bi bi-check-circle-fill" viewBox="0 0 16 16" role="img" aria-label="Success:">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                        </svg>
+                        <div><strong>¡Éxito!</strong> @TempData["SuccessMessage"]</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Personas</h5>
+                    <a asp-action="Create" class="btn btn-primary"><i class="align-middle" data-feather="plus"></i> Nueva</a>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row mb-3">
+                        <div class="col-md-10">
+                            <input type="text" name="q" value="@ViewBag.Query" class="form-control" placeholder="Buscar por nombre, documento o correo" />
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary w-100" type="submit"><i class="align-middle" data-feather="search"></i> Buscar</button>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Documento</th>
+                                    <th>Celular</th>
+                                    <th>Correo</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model)
+                                {
+                                    <tr>
+                                        <td>@(p.Nombres + " " + p.Apellidos)</td>
+                                        <td>@p.CodigoTipoDocumento - @p.NumeroDocumento</td>
+                                        <td>@p.Celular</td>
+                                        <td>@p.Correo</td>
+                                        <td><span class="badge bg-@(p.Estado ? "success" : "secondary")">@(p.Estado ? "Activo" : "Inactivo")</span></td>
+                                        <td class="text-end">
+                                            <a asp-action="Edit" asp-route-id="@p.IdPersona" class="btn btn-sm btn-warning">Editar</a>
+                                            <a asp-action="Details" asp-route-id="@p.IdPersona" class="btn btn-sm btn-info">Ver</a>
+                                            <a asp-action="Delete" asp-route-id="@p.IdPersona" class="btn btn-sm btn-danger">Eliminar</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (pages > 1)
+                    {
+                        <nav>
+                            <ul class="pagination">
+                                @for (int i = 1; i <= pages; i++)
+                                {
+                                    <li class="page-item @(i == page ? "active" : "")">
+                                        <a class="page-link" asp-action="Index" asp-route-q="@q" asp-route-page="@i">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script> if (window.feather?.replace) feather.replace(); </script>
+}

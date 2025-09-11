@@ -1,0 +1,28 @@
+﻿@model PersonaViewModel
+@{
+    ViewData["Title"] = "Eliminar persona";
+}
+
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Eliminar persona</h5>
+                </div>
+                <div class="card-body">
+                    <p>¿Seguro que deseas eliminar <strong>@Model.Nombres @Model.Apellidos</strong> (@Model.CodigoTipoDocumento - @Model.NumeroDocumento)?</p>
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="IdPersona" />
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script> if (window.feather?.replace) feather.replace(); </script>
+}

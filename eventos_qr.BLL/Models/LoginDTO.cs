@@ -1,6 +1,6 @@
 ﻿namespace eventos_qr.BLL.Models
 {
-    public class LoginDTO
+    public class LoginDto
     {
         public int MyProperty { get; set; }
     }

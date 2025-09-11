@@ -12,13 +12,26 @@
 
 		<ul class="sidebar-nav">
 			<li class="sidebar-header">
-				Pages
+				Parametros
 			</li>
 
+			<li class="sidebar-item @Html.IsActive("Persona", "Index,Create,Edit,Details,Delete")">
+				<a class="sidebar-link" asp-controller="Persona" asp-action="Index">
+					<i class="align-middle" data-feather="users"></i> <span class="align-middle">Personas</span>
+				</a>
+			</li>
+
+			<li class="sidebar-header">
+				Estadisticas
+			</li>
 			<li class="sidebar-item @Html.IsActive("Home", "Index")">
 				<a class="sidebar-link" asp-controller="Home" asp-action="Index">
 					<i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
 				</a>
+			</li>
+
+			<li class="sidebar-header">
+				Eventos
 			</li>
 			<li class="sidebar-item @Html.IsActive("Evento", "Index,Create,Edit,Details,Delete")">
 				<a class="sidebar-link" asp-controller="Evento" asp-action="Index">
@@ -31,6 +44,8 @@
 					<i class="align-middle" data-feather="tag"></i> <span class="align-middle">Ventas</span>
 				</a>
 			</li>
+
+			
 		</ul>
 	</div>
 </nav>

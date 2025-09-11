@@ -27,9 +27,11 @@ namespace eventos_qr.BLL
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IEventoRepository, EventoRepository>();
+            services.AddScoped<IPersonaRepository, PersonaRepository>();
 
             // Query services
             services.AddScoped<EventoQueryService>();
+            services.AddScoped<PersonaQueryService>();
         }
     }
 }
