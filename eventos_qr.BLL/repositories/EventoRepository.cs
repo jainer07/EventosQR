@@ -1,9 +1,8 @@
 ﻿using eventos_qr.BLL.Contracts;
 using eventos_qr.BLL.Mapper;
-using eventos_qr.BLL.Models;
+using eventos_qr.Entity.Dtos;
 using eventos_qr.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace eventos_qr.BLL.repositories
 {
@@ -17,7 +16,7 @@ namespace eventos_qr.BLL.repositories
             try
             {
                 if (id <= 0)
-                    throw new ArgumentException("El ID del evento debe ser un número positivo.", nameof(id));
+                    return null;
 
                 var evento = await _eventoQuery.ObtenerAsync(id);
 
@@ -84,7 +83,9 @@ namespace eventos_qr.BLL.repositories
             existe.Fecha = evento.Fecha;
             existe.Capacidad = evento.Capacidad;
             existe.PrecioUnitario = evento.PrecioUnitario;
+            existe.Disponibles = evento.Disponibles;
             existe.Vendidas = evento.Vendidas;
+            existe.Estado = evento.Estado;
 
             var entity = _mapper.EventoModelMapper(evento);
 

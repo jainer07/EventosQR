@@ -28,10 +28,12 @@ namespace eventos_qr.BLL
         {
             services.AddScoped<IEventoRepository, EventoRepository>();
             services.AddScoped<IPersonaRepository, PersonaRepository>();
+            services.AddScoped<IVentaRepository, VentaRepository>();
 
             // Query services
             services.AddScoped<EventoQueryService>();
             services.AddScoped<PersonaQueryService>();
+            services.AddScoped<VentasQueryService>();
         }
     }
 }

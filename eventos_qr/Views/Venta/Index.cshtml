@@ -1,95 +1,216 @@
-﻿<div class="container-fluid p-0">
-    <h1 class="h3 mb-3">Ventas</h1>
+﻿@model IEnumerable<VentaViewModel>
+@{
+    ViewData["Title"] = "Ventas";
+    var page = (int)(ViewBag.Page ?? 1);
+    var total = (int)(ViewBag.Total ?? Model.Count());
+    var pageSize = (int)(ViewBag.PageSize ?? 10);
+    var q = (string)(ViewBag.Query ?? string.Empty);
+    int pages = (int)Math.Ceiling((double)total / pageSize);
+}
 
+<div class="container-fluid p-0">
     <div class="row">
         <div class="col-12">
-            <div class="card">
-				<div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Todas las ventas</h5>
-					<a class="btn btn-info" asp-controller="Venta" asp-action="Crear">Crear venta</a>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show auto-dismiss modern" role="alert" data-auto-dismiss="4000">
+                    <div class="alert-message">
+                        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" class="bi bi-check-circle-fill" viewBox="0 0 16 16" role="img" aria-label="Success:">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                        </svg>
+                        <div><strong>¡Éxito!</strong> @TempData["SuccessMessage"]</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 </div>
-                <div class="card-body">
-					<div class="row">
-						<div class="col-12 d-flex">
-							<div class="card flex-fill">
-								<div class="card-header">
+            }
 
-									<h5 class="card-title mb-0">Latest Projects</h5>
-								</div>
-								<table class="table table-hover my-0">
-									<thead>
-										<tr>
-											<th>Name</th>
-											<th class="d-none d-xl-table-cell">Start Date</th>
-											<th class="d-none d-xl-table-cell">End Date</th>
-											<th>Status</th>
-											<th class="d-none d-md-table-cell">Assignee</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>Project Apollo</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-success">Done</span></td>
-											<td class="d-none d-md-table-cell">Vanessa Tucker</td>
-										</tr>
-										<tr>
-											<td>Project Fireball</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-danger">Cancelled</span></td>
-											<td class="d-none d-md-table-cell">William Harris</td>
-										</tr>
-										<tr>
-											<td>Project Hades</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-success">Done</span></td>
-											<td class="d-none d-md-table-cell">Sharon Lessman</td>
-										</tr>
-										<tr>
-											<td>Project Nitro</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-warning">In progress</span></td>
-											<td class="d-none d-md-table-cell">Vanessa Tucker</td>
-										</tr>
-										<tr>
-											<td>Project Phoenix</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-success">Done</span></td>
-											<td class="d-none d-md-table-cell">William Harris</td>
-										</tr>
-										<tr>
-											<td>Project X</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-success">Done</span></td>
-											<td class="d-none d-md-table-cell">Sharon Lessman</td>
-										</tr>
-										<tr>
-											<td>Project Romeo</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-success">Done</span></td>
-											<td class="d-none d-md-table-cell">Christina Mason</td>
-										</tr>
-										<tr>
-											<td>Project Wombat</td>
-											<td class="d-none d-xl-table-cell">01/01/2023</td>
-											<td class="d-none d-xl-table-cell">31/06/2023</td>
-											<td><span class="badge bg-warning">In progress</span></td>
-											<td class="d-none d-md-table-cell">William Harris</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h1 class="h3 mb-0">Ventas</h1>
+                    <small class="text-muted">Listado y búsqueda</small>
                 </div>
+                <div class="btn-toolbar">
+                    <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2">
+                        <i data-feather="plus"></i><span>Nueva venta</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <form method="get" class="d-flex gap-2 w-100">
+                        <div class="flex-grow-1">
+                            <input type="text" name="q" value="@q" class="form-control" placeholder="Buscar por cliente o evento" />
+                        </div>
+                        <button class="btn btn-outline-secondary d-flex align-items-center gap-2" type="submit">
+                            <i data-feather="search"></i><span>Buscar</span>
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Evento</th>
+                                    <th>Cliente</th>
+                                    <th class="text-end">Cant.</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">Total</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var v in Model)
+                                {
+                                    <tr>
+                                        <td>@v.Fecha.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>@v.NombreEvento</td>
+                                        <td>@v.NombrePersona</td>
+                                        <td class="text-end">@v.Cantidad</td>
+                                        <td class="text-end">@v.PrecioUnitario.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                                        <td class="text-end">@v.Total.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                                        <td>
+                                            @switch (v.EstadoVenta)
+                                            {
+                                                case 2:
+                                                    <span class="badge bg-success">Aplicado</span>
+                                                    ; break;
+                                                case 3:
+                                                    <span class="badge bg-warning">Rechazado</span>
+                                                    ; break;
+                                                case 4:
+                                                    <span class="badge bg-danger">Eliminado</span>
+                                                    ; break;
+                                                default:
+                                                    <span class="badge bg-info text-dark">Pendiente</span>
+                                                    ; break;
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@v.IdVenta" class="btn btn-sm btn-outline-info" title="Ver"><i data-feather="eye"></i></a>
+                                                <a asp-action="Edit" asp-route-id="@v.IdVenta" class="btn btn-sm btn-outline-warning" title="Editar"><i data-feather="edit-2"></i></a>
+                                                <a asp-action="Delete" asp-route-id="@v.IdVenta" class="btn btn-sm btn-outline-danger" title="Eliminar"><i data-feather="trash-2"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @if (pages > 1)
+                {
+                    <div class="card-footer">
+                        <nav aria-label="Paginación">
+                            <ul class="pagination mb-0">
+                                @for (int i = 1; i <= pages; i++)
+                                {
+                                    <li class="page-item @(i == page ? "active" : "")">
+                                        <a class="page-link" asp-action="Index" asp-route-q="@q" asp-route-page="@i">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+
+        if (window.feather?.replace) feather.replace();
+
+        (function () {
+
+            // Traer valores de TempData (como literales JS)
+            const plantilla = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["WhatsappPlantilla"] ?? ""));
+            const numero    = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["WhatsappNumero"] ?? ""));
+            const msg64     = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["WhatsappMsg64"] ?? ""));
+            const idVenta   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["WhatsappIdVenta"] ?? ""));
+
+            if (!numero) return; // no hay flujo de WhatsApp
+
+            function b64DecodeUtf8(b64) {
+                try {
+                    // Decodifica Base64 a bytes
+                    const binaryString = atob(b64);
+
+                    // Convierte bytes a array de códigos de caracteres
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+
+                    // Decodifica UTF-8 correctamente
+                    return new TextDecoder('utf-8').decode(bytes);
+                }
+                catch {
+                    console.error('Error decodificando Base64 UTF-8:', error);
+                    return b64; // Retorna el original si hay error
+                }
+            }
+
+            const msgPlain = b64DecodeUtf8(msg64);
+            const msgParam = encodeURIComponent(msgPlain);
+
+            let link = plantilla.replace("{NUMERO}", numero)
+                                .replace("{MENSAJE}", msgParam);
+
+            async function marcarNotificado() {
+                try {
+                    await fetch('/Venta/ConfirmarNotificacion?id=' + idVenta, { method: 'POST' });
+                } catch (e) {
+                    console.error("Error notificando venta:", e);
+                }
+            }
+
+            const htmlContent = `<div class="text-start">
+                <p class="mb-3">Para completar la venta, debes enviar el mensaje por WhatsApp.</p>
+                <a id="saOpenWhatsapp" href="${link}" target="_blank" class="btn btn-success w-100">
+                  Abrir WhatsApp
+                </a>
+                <small class="text-muted d-block mt-3">
+                  Si tu navegador bloquea la ventana emergente, presiona el botón “Abrir WhatsApp”.
+                </small>
+              </div>`;
+
+            Swal.fire({
+                title: 'Enviar confirmación por WhatsApp',
+                html: htmlContent,
+                icon: 'info',
+                showConfirmButton: false,     // usamos nuestro botón personalizado
+                showCancelButton: false,
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                backdrop: true,               // bloquea la interacción con el resto de la página
+                didOpen: () => {
+                // Intento de auto-abrir en nueva pestaña; si es bloqueado, el usuario deberá pulsar el botón
+                    try {
+                        const win = window.open(link, '_blank');
+                        if (win) {
+                            marcarNotificado();
+                          // Puedes cerrar el alert si quieres:
+                          Swal.close();
+                        }
+                    } catch {}
+                    // Wire del botón
+                    const btn = document.getElementById('saOpenWhatsapp');
+                    if (btn) {
+                        btn.addEventListener('click', () => {
+                            marcarNotificado();
+                            // Cierra el alert tras el click (opcional)
+                            setTimeout(() => Swal.close(), 500);
+                        });
+                    }
+                }
+            });
+        })();
+    </script>
+}

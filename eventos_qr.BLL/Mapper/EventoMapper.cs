@@ -1,5 +1,5 @@
-﻿using eventos_qr.BLL.Models;
-using eventos_qr.DAL.Models;
+﻿using eventos_qr.Entity.Models;
+using eventos_qr.Entity.Dtos;
 
 namespace eventos_qr.BLL.Mapper
 {
@@ -11,10 +11,12 @@ namespace eventos_qr.BLL.Mapper
             {
                 IdEvento = evento.IdEvento,
                 Nombre = evento.Nombre,
-                Capacidad = evento.Capacidad,
                 Fecha = evento.Fecha,
+                Capacidad = evento.Capacidad,
+                Disponibles = evento.Disponibles,
                 PrecioUnitario = evento.PrecioUnitario,
                 Vendidas = evento.Vendidas,
+                Estado = evento.Estado,
                 RowVersion = DateTime.SpecifyKind(evento.RowVersion, DateTimeKind.Utc),
                 RowVersionTicks = DateTime.SpecifyKind(evento.RowVersion, DateTimeKind.Utc).Ticks
             };
@@ -26,10 +28,12 @@ namespace eventos_qr.BLL.Mapper
             {
                 IdEvento = e.IdEvento,
                 Nombre = e.Nombre,
-                Capacidad = e.Capacidad,
                 Fecha = e.Fecha,
+                Capacidad = e.Capacidad,
+                Disponibles = e.Disponibles,
                 PrecioUnitario = e.PrecioUnitario,
-                Vendidas = e.Vendidas
+                Vendidas = e.Vendidas,
+                Estado = e.Estado,
             }).ToList();
         }
 
@@ -39,9 +43,11 @@ namespace eventos_qr.BLL.Mapper
             {
                 IdEvento = evento.IdEvento,
                 Nombre = evento.Nombre,
-                Capacidad = evento.Capacidad,
                 Fecha = evento.Fecha,
+                Capacidad = evento.Capacidad,
+                Disponibles = evento.Disponibles,
                 PrecioUnitario = evento.PrecioUnitario,
+                Estado = evento.Estado,
                 RowVersion = evento.RowVersion,
                 Vendidas = evento.Vendidas
             };

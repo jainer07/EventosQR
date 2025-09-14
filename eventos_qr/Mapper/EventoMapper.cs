@@ -1,4 +1,4 @@
-﻿using eventos_qr.BLL.Models;
+﻿using eventos_qr.Entity.Dtos;
 using eventos_qr.Models;
 
 namespace eventos_qr.Mapper
@@ -13,8 +13,9 @@ namespace eventos_qr.Mapper
             {
                 IdEvento = evento.IdEvento,
                 Nombre = evento.Nombre,
-                Capacidad = evento.Capacidad,
                 Fecha = evento.Fecha,
+                Capacidad = evento.Capacidad,
+                Disponibles = evento.Disponibles,
                 PrecioUnitario = evento.PrecioUnitario,
                 Vendidas = evento.Vendidas,
                 RowVersion = rvUtc,
@@ -28,8 +29,9 @@ namespace eventos_qr.Mapper
             {
                 IdEvento = e.IdEvento,
                 Nombre = e.Nombre,
-                Capacidad = e.Capacidad,
                 Fecha = e.Fecha,
+                Capacidad = e.Capacidad,
+                Disponibles = e.Disponibles,
                 PrecioUnitario = e.PrecioUnitario,
                 RowVersion = e.RowVersion,
                 Vendidas = e.Vendidas
@@ -44,8 +46,9 @@ namespace eventos_qr.Mapper
             {
                 IdEvento = evento.IdEvento,
                 Nombre = evento.Nombre,
-                Capacidad = evento.Capacidad,
                 Fecha = evento.Fecha,
+                Capacidad = evento.Capacidad,
+                Disponibles = evento.Disponibles,
                 PrecioUnitario = evento.PrecioUnitario,
                 Vendidas = evento.Vendidas,
                 RowVersion = rowVersionUtc,

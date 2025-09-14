@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace eventos_qr.DAL.Models
+namespace eventos_qr.Entity.Models
 {
     [Table("tbl_persona")]
     public class PersonaModel
@@ -38,7 +38,6 @@ namespace eventos_qr.DAL.Models
         [Column("RowVersion")]
         public long RowVersion { get; set; } = 1;
 
-        // Navegación
-        //public ICollection<VentasModel>? Ventas { get; set; }
+        public ICollection<VentasModel>? Ventas { get; set; }
     }
 }

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\eventos_qr.DAL\eventos_qr.DAL.csproj" />
+    <ProjectReference Include="..\eventos_qr.Entity\eventos_qr.Entity.csproj" />
   </ItemGroup>
 
 </Project>

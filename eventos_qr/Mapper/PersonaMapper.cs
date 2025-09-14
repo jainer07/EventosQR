@@ -1,4 +1,4 @@
-﻿using eventos_qr.BLL.Models;
+﻿using eventos_qr.Entity.Dtos;
 using eventos_qr.Models;
 
 namespace eventos_qr.Mapper

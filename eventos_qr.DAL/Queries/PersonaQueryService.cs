@@ -1,4 +1,4 @@
-﻿using eventos_qr.DAL.Models;
+﻿using eventos_qr.Entity.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace eventos_qr.DAL.Queries
@@ -7,10 +7,7 @@ namespace eventos_qr.DAL.Queries
     {
         private readonly EventosQR_Contex _ctx = ctx;
 
-        public async Task<PersonaModel?> ObtenerAsync(long id, CancellationToken ct)
-        {
-            return await _ctx.PersonaModels.AsNoTracking().FirstOrDefaultAsync(p => p.IdPersona == id, ct);
-        }
+        public async Task<PersonaModel?> ObtenerAsync(long id, CancellationToken ct) => await _ctx.PersonaModels.AsNoTracking().FirstOrDefaultAsync(p => p.IdPersona == id, ct);
 
         public async Task<List<PersonaModel>> ListarAsync(string? filtro, int page, int pageSize, CancellationToken ct)
         {

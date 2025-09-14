@@ -9,11 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\eventos_qr.BLL\eventos_qr.BLL.csproj" />
     <ProjectReference Include="..\eventos_qr.DAL\eventos_qr.DAL.csproj" />
+    <ProjectReference Include="..\eventos_qr.Entity\eventos_qr.Entity.csproj" />
   </ItemGroup>
 
   <ItemGroup>

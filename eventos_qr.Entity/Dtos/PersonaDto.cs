@@ -1,4 +1,4 @@
-﻿namespace eventos_qr.BLL.Models
+﻿namespace eventos_qr.Entity.Dtos
 {
     public class PersonaDto : RespuestaType
     {

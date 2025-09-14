@@ -1,4 +1,4 @@
-﻿using eventos_qr.BLL.Models;
+﻿using eventos_qr.Entity.Dtos;
 
 namespace eventos_qr.BLL.Contracts
 {

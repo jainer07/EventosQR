@@ -1,9 +1,8 @@
 ﻿using eventos_qr.BLL.Contracts;
 using eventos_qr.BLL.Helpers;
 using eventos_qr.BLL.Mapper;
-using eventos_qr.BLL.Models;
+using eventos_qr.Entity.Dtos;
 using eventos_qr.DAL.Queries;
-using Microsoft.EntityFrameworkCore;
 
 namespace eventos_qr.BLL.repositories
 {
@@ -17,7 +16,7 @@ namespace eventos_qr.BLL.repositories
             try
             {
                 if (id < 0)
-                    throw new ArgumentException("El ID de la persona debe ser un número positivo.", nameof(id));
+                    return null;
 
                 var evento = await _personaQuery.ObtenerAsync(id, ct);
 
@@ -99,14 +98,6 @@ namespace eventos_qr.BLL.repositories
             {
                 respuesta.Mensaje = "La entidad persona no puede ser nula.";
                 respuesta.Codigo = 2;
-                return respuesta;
-            }
-
-            var existe = await ObtenerAsync(entity.IdPersona, ct);
-            if (existe != null)
-            {
-                respuesta.Mensaje = $"La persona con ID {entity.IdPersona} ya existe.";
-                respuesta.Codigo = 1;
                 return respuesta;
             }
 

@@ -1,4 +1,4 @@
-﻿using eventos_qr.DAL.Models;
+﻿using eventos_qr.Entity.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace eventos_qr.DAL.Queries
@@ -56,7 +56,6 @@ namespace eventos_qr.DAL.Queries
             {
                 return false; // Otro error
             }
-
         }
     }
 }

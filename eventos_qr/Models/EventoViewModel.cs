@@ -21,7 +21,11 @@ namespace eventos_qr.Models
         public decimal PrecioUnitario { get; set; }
 
         [Required, Range(0, int.MaxValue)]
-        public int Vendidas { get; set; } = 0;
+        public int Disponibles { get; set; }
+
+        [Required, Range(0, int.MaxValue)]
+        public int Vendidas { get; set; }
+        public bool Estado { get; set; } = true;
 
         // token de concurrencia
         public DateTime RowVersion { get; set; }
