@@ -72,8 +72,7 @@ namespace eventos_qr.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VentaViewModel model, CancellationToken ct)
         {
             if (ModelState.IsValid)
@@ -113,10 +112,92 @@ namespace eventos_qr.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Details(int id, CancellationToken ct)
+        public async Task<IActionResult> Details(long id, CancellationToken ct)
         {
             var venta = await _ventaRepository.ObtenerAsync(id, ct);
 
+            if (venta == null) return NotFound();
+
+            var ventaMapper = _mapper.VentaViewModelMapper(venta);
+            return View(ventaMapper);
+        }
+
+        public async Task<IActionResult> Edit(long id, CancellationToken ct = default)
+        {
+            var venta = await _ventaRepository.ObtenerAsync(id, ct);
+            if (venta == null) return NotFound();
+
+            var ventaMapper = _mapper.VentaViewModelMapper(venta);
+
+            var eventos = await _eventoRepository.ListarAsync();
+            var lsEventos = new List<SelectListItem>();
+
+            foreach (var item in eventos)
+            {
+                var evento = new SelectListItem()
+                {
+                    Value = item.IdEvento.ToString(),
+                    Text = item.Nombre,
+                };
+
+                lsEventos.Add(evento);
+            }
+
+            ventaMapper.Eventos = lsEventos;
+            ventaMapper.Capacidad = eventos.ToList()[0].Capacidad;
+            ventaMapper.Disponibles = eventos.ToList()[0].Disponibles;
+            ventaMapper.PrecioUnitario = eventos.ToList()[0].PrecioUnitario;
+
+            return View(ventaMapper);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(long id, VentaViewModel model, CancellationToken ct)
+        {
+            if (id != model.IdVenta) return BadRequest();
+
+            var dto = _mapper.VentaDtoMapper(model);
+            dto.Fecha = UtilitiesHelper.ToUtcFromBogota(model.Fecha);
+
+            var resultado = await _ventaRepository.ActualizarAsync(id, dto, ct);
+            if (resultado.Codigo == 0)
+            {
+                TempData["SuccessMessage"] = resultado.Mensaje;
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                model = await GetModelIndex(model);
+
+                // Si hay error, mostrar el mensaje en la vista actual
+                ViewBag.ErrorMessage = resultado.Mensaje;
+                return View(model);
+            }
+        }
+
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        {
+            var venta = await _ventaRepository.ObtenerAsync(id, ct);
+
+            if (venta == null) return NotFound();
+
+            var ventaMapper = _mapper.VentaViewModelMapper(venta);
+            return View(ventaMapper);
+        }
+
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
+        {
+            var resultado = await _ventaRepository.DeleteAsync(id, ct);
+            if (resultado.Codigo == 0)
+            {
+                TempData["SuccessMessage"] = resultado.Mensaje;
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.ErrorMessage = resultado.Mensaje;
+
+            var venta = await _ventaRepository.ObtenerAsync(id, ct);
             if (venta == null) return NotFound();
 
             var personaMapper = _mapper.VentaViewModelMapper(venta);

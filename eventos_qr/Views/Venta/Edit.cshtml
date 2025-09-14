@@ -1,0 +1,155 @@
+﻿@using eventos_qr.BLL.Helpers
+@model VentaViewModel
+@{
+    ViewData["Title"] = "Editar venta";
+}
+
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h1 class="h3 mb-0">Editar venta</h1>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-secondary d-flex align-items-center gap-2"><i data-feather="arrow-left"></i><span>Volver</span></a>
+            </div>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert modern alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    @ViewBag.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" class="row g-3">
+                        <input type="hidden" asp-for="IdVenta" />
+                        <input type="hidden" asp-for="RowVersion" />
+
+                        <div class="col-md-6">
+                            <label class="form-label">Evento</label>
+                            <select asp-for="IdEvento" class="form-select">
+                                @foreach (var e in Model.Eventos)
+                                {
+                                    <option value="@e.Value">@e.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="IdEvento" class="text-danger"></span>
+                        </div>
+       
+                        <input type="hidden" asp-for="IdPersona" id="hiddenIdPersona" />
+                        <input type="hidden" asp-for="NombrePersona" id="hiddenNombrePersona" />
+                        <input type="hidden" asp-for="CelularPersona" id="hiddenCelularPersona" />
+
+                        <div class="col-12" id="personaInfo">
+                            <div class="alert alert-success d-flex align-items-center">
+                                <i data-feather="user" class="me-2"></i>
+                                <div>
+                                    <strong>Cliente seleccionado:</strong>
+                                    <span id="nombrePersona">@Model.NombrePersona</span> - <span id="documentoPersona">@Model.NumeroDocumento</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Entradas disponibles</label>
+                            <input asp-for="Disponibles" class="form-control" disabled readonly />
+                            <span asp-validation-for="Disponibles" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Capacidad del evento</label>
+                            <input asp-for="Capacidad" class="form-control" disabled readonly />
+                            <span asp-validation-for="Capacidad" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha venta</label>
+                            @{
+                                // Si es Create, usa DateTime.UtcNow → Bogotá
+                                var fechaLocal = Model?.Fecha != default
+                                ? Model.Fecha  // si tu ViewModel ya viene en Bogotá
+                                : UtilitiesHelper.ToBogotaFromUtc(DateTime.UtcNow);
+                            }
+                            <input asp-for="Fecha" type="datetime-local" value="@fechaLocal.ToString("yyyy-MM-ddTHH:mm")" class="form-control" readonly />
+                            <span asp-validation-for="Fecha" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4"></div>
+
+
+                        <div class="col-md-2">
+                            <label class="form-label">Cantidad entradas</label>
+                            <input asp-for="Cantidad" class="form-control" id="inputCantidad" />
+                            <span asp-validation-for="Cantidad" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Precio Unitario</label>
+                            <input asp-for="PrecioUnitario" id="inputPrecioUnitario" class="form-control" readonly />
+                            <span asp-validation-for="PrecioUnitario" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Total</label>
+                            <input asp-for="Total" id="inputTotal" class="form-control" readonly />
+                            <span asp-validation-for="Total" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 d-flex gap-2">
+                            <button type="submit" id="btnGuardar" class="btn btn-primary d-flex align-items-center gap-2" disabled>
+                                <i data-feather="save"></i><span>Guardar</span>
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                                <i data-feather="x"></i><span>Cancelar</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        if (window.feather) { feather.replace(); }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputCantidad = document.getElementById('inputCantidad');
+            const inputPrecioUnitario = document.getElementById('inputPrecioUnitario');
+            const inputTotal = document.getElementById('inputTotal');
+            const hiddenIdPersona = document.getElementById('hiddenIdPersona');
+            const hiddenNombrePersona = document.getElementById('hiddenNombrePersona');
+            const hiddenCelularPersona = document.getElementById('hiddenCelularPersona');
+            const btnGuardar = document.getElementById('btnGuardar');
+            const selectEvento = document.getElementById('IdEvento');
+            const nombrePersona = document.getElementById('nombrePersona');
+            const documentoPersona = document.getElementById('documentoPersona');
+
+            function calcularTotal() {
+                const cantidad = parseFloat(inputCantidad.value) || 0;
+                const precioUnitario = parseFloat(inputPrecioUnitario.value) || 0;
+                const total = cantidad * precioUnitario;
+                inputTotal.value = total.toFixed(2);
+            }
+
+            function validarFormulario() {
+                const idPersona = hiddenIdPersona.value;
+                const nombrePersona = hiddenNombrePersona.value;
+                const celularPersona = hiddenCelularPersona.value;
+                const idEvento = selectEvento.value;
+                const cantidad = parseFloat(inputCantidad.value);
+                const valido = idPersona && nombrePersona && idEvento && !isNaN(cantidad) && cantidad > 0;
+                btnGuardar.disabled = !valido;
+            }
+
+            // Eventos de cambio
+            inputCantidad?.addEventListener('input', () => { calcularTotal(); validarFormulario(); });
+            selectEvento?.addEventListener('change', validarFormulario);
+
+            // Inicial
+            calcularTotal();
+            validarFormulario();
+        });
+    </script>
+}

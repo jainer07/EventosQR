@@ -50,13 +50,16 @@
                         <dt class="col-sm-3">Total venta</dt>
                         <dd class="col-sm-9">@Model.Total.ToString("N2")</dd>
                         <dt class="col-sm-3">Noficación envidad?</dt>
-                        <dd class="col-sm-9">@(Model.EnvioNotificacion ? "SI":"NO")</dd>
+                        <dd class="col-sm-9">@(Model.EnvioNotificacion ? "SI" : "NO")</dd>
                         <dt class="col-sm-3">Estado</dt>
                         <dd class="col-sm-9"><span class="badge bg-@estadoVentaClase">@estadoVenta</span></dd>
                         <dt class="col-sm-3">Comprobante pago</dt>
                         <dd class="col-sm-9">@Model.ComprobantePago</dd>
                     </dl>
-                    <a asp-action="Edit" asp-route-id="@Model.IdPersona" class="btn btn-warning"><i data-feather="edit"></i> Editar</a>
+                    @if (Model.EstadoVenta == 1)
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.IdPersona" class="btn btn-warning"><i data-feather="edit"></i> Editar</a>
+                    }
                     <a asp-action="Index" class="btn btn-secondary"><i data-feather="arrow-left"></i> Volver</a>
                 </div>
             </div>

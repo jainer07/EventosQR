@@ -250,15 +250,18 @@ namespace eventos_qr.BLL.repositories
                         if (evento == null)
                         {
                             await tx.RollbackAsync(ct);
-                            respuesta.Mensaje = "El evento no existe en la base de datos";
+                            respuesta.Mensaje = "El evento no existe";
                             return;
                         }
 
                         // Si cambió el evento, reponemos al viejo y descontamos del nuevo
                         if (entity.IdEvento != ventaModel.IdEvento)
                         {
-                            // Reponer al viejo
+                            // 1) Reponer al evento anterior
                             evento.Disponibles += ventaModel.Cantidad;
+                            evento.Vendidas -= ventaModel.Cantidad;
+                            if (evento.Vendidas < 0) evento.Vendidas = 0;
+                            if (evento.Disponibles > evento.Capacidad) evento.Disponibles = evento.Capacidad;
 
                             // Descontar del nuevo
                             var nuevoEvento = await _ctx.EventoModels.FirstOrDefaultAsync(x => x.IdEvento == entity.IdEvento, ct);
@@ -277,6 +280,11 @@ namespace eventos_qr.BLL.repositories
                             }
 
                             nuevoEvento.Disponibles -= entity.Cantidad;
+                            nuevoEvento.Vendidas += entity.Cantidad;
+
+                            if (nuevoEvento.Disponibles < 0) nuevoEvento.Disponibles = 0;
+                            if (nuevoEvento.Vendidas > nuevoEvento.Capacidad) nuevoEvento.Vendidas = nuevoEvento.Capacidad;
+
                             ventaModel.IdEvento = entity.IdEvento;
                         }
                         else
@@ -295,6 +303,7 @@ namespace eventos_qr.BLL.repositories
                                         return;
                                     }
                                     evento.Disponibles -= delta;
+                                    evento.Vendidas += delta;
                                 }
                                 else
                                 {
@@ -308,7 +317,7 @@ namespace eventos_qr.BLL.repositories
                         ventaModel.IdPersona = entity.IdPersona;
                         ventaModel.FechaUtc = entity.Fecha;
                         ventaModel.Cantidad = entity.Cantidad;
-                        ventaModel.Total = entity.Total;
+                        ventaModel.Total = entity.Cantidad * evento.PrecioUnitario;
                         ventaModel.EstadoVenta = entity.EstadoVenta;
                         ventaModel.ComprobantePago = entity.ComprobantePago ?? "";
                         ventaModel.EnvioNotificacion = entity.EnvioNotificacion;
@@ -317,13 +326,32 @@ namespace eventos_qr.BLL.repositories
                         _ctx.Entry(ventaModel).Property(x => x.RowVersion).OriginalValue = entity.RowVersion;
                         ventaModel.RowVersion = entity.RowVersion + 1;
 
-                        await _ctx.SaveChangesAsync(ct);
-                        await tx.CommitAsync(ct);
+                        try
+                        {
+                            await _ctx.SaveChangesAsync(ct);
+                            await tx.CommitAsync(ct);
+                        }
+                        catch (DbUpdateException dbEx)
+                        {
+                            await tx.RollbackAsync(ct);
+                            var inner = dbEx.InnerException?.Message ?? dbEx.Message;
+                            respuesta.Codigo = 99;
+                            respuesta.Mensaje = $"No se pudo actualizar la venta (DB): {inner}";
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            await tx.RollbackAsync(ct);
+                            var inner = ex.InnerException?.Message ?? ex.Message;
+                            respuesta.Codigo = 99;
+                            respuesta.Mensaje = $"No se pudo actualizar la venta: {inner}";
+                            return;
+                        }
 
                         respuesta.Codigo = 0;
                         respuesta.Mensaje = "Venta actualizada correctamente";
                     }
-                    catch (Exception)
+                    catch
                     {
                         await tx.RollbackAsync(ct);
                         throw;
@@ -384,6 +412,7 @@ namespace eventos_qr.BLL.repositories
                         var ventaModel = await _ctx.VentasModels.FirstOrDefaultAsync(v => v.IdVenta == id, ct);
                         if (ventaModel is null)
                         {
+                            await tx.RollbackAsync(ct);
                             respuesta.Mensaje = "La venta no existe en la base de datos";
                             return;
                         }
@@ -396,11 +425,39 @@ namespace eventos_qr.BLL.repositories
                             return;
                         }
 
+                        // Reponer cupos y vendidas
                         evento.Disponibles += ventaModel.Cantidad;
-                        ventaModel.EstadoVenta = (int)EstadoVenta.Eliminada;
+                        if (evento.Disponibles > evento.Capacidad) evento.Disponibles = evento.Capacidad;
 
-                        await _ctx.SaveChangesAsync(ct);
-                        await tx.CommitAsync(ct);
+                        evento.Vendidas -= ventaModel.Cantidad;
+                        if (evento.Vendidas < 0) evento.Vendidas = 0;
+
+                        // Marcar como eliminada + concurrencia
+                        ventaModel.EstadoVenta = (int)EstadoVenta.Eliminada;
+                        _ctx.Entry(ventaModel).Property(x => x.RowVersion).OriginalValue = ventaModel.RowVersion;
+                        ventaModel.RowVersion = ventaModel.RowVersion + 1;
+
+                        try
+                        {
+                            await _ctx.SaveChangesAsync(ct);
+                            await tx.CommitAsync(ct);
+                        }
+                        catch (DbUpdateException dbEx)
+                        {
+                            await tx.RollbackAsync(ct);
+                            var inner = dbEx.InnerException?.Message ?? dbEx.Message;
+                            respuesta.Codigo = 99;
+                            respuesta.Mensaje = $"No se pudo eliminar la venta (DB): {inner}";
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            await tx.RollbackAsync(ct);
+                            var inner = ex.InnerException?.Message ?? ex.Message;
+                            respuesta.Codigo = 99;
+                            respuesta.Mensaje = $"No se pudo eliminar la venta: {inner}";
+                            return;
+                        }
 
                         respuesta.Codigo = 0;
                         respuesta.Mensaje = "Venta eliminada correctamente";
@@ -458,13 +515,6 @@ namespace eventos_qr.BLL.repositories
             {
                 respuesta.Codigo = 4;
                 respuesta.Mensaje = "La cantidad debe ser mayor a cero";
-                return respuesta;
-            }
-
-            if (entity.Total <= 0)
-            {
-                respuesta.Codigo = 5;
-                respuesta.Mensaje = "El total debe ser mayor a cero";
                 return respuesta;
             }
 
@@ -546,7 +596,7 @@ namespace eventos_qr.BLL.repositories
         }
         private RespuestaType ValidarActualizar(VentaDto entity, VentaDto ventaExistente)
         {
-            var respuesta = new RespuestaType() { Codigo = 99, Mensaje = "Error al actualizar venta" };
+            var respuesta = new RespuestaType() { Codigo = 0, Mensaje = "" };
 
             if (ventaExistente == null)
             {

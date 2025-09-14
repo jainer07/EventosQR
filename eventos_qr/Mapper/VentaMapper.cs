@@ -64,7 +64,7 @@ namespace eventos_qr.Mapper
                 IdEvento = venta.IdEvento,
                 Fecha = venta.Fecha,
                 Cantidad = venta.Cantidad,
-                Total = venta.Total,
+                Total = venta.Cantidad * venta.PrecioUnitario,
                 EstadoVenta = venta.EstadoVenta,
                 ComprobantePago = venta.ComprobantePago,
                 EnvioNotificacion = venta.EnvioNotificacion,
