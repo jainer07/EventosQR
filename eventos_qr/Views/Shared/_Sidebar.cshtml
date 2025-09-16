@@ -39,12 +39,17 @@
 				</a>
 			</li>
 
-			<li class="sidebar-item @Html.IsActive("Venta", "Index")">
+			<li class="sidebar-item @Html.IsActive("Venta", "Index,Create,Edit,Details,Delete")">
 				<a class="sidebar-link" asp-controller="Venta" asp-action="Index">
 					<i class="align-middle" data-feather="tag"></i> <span class="align-middle">Ventas</span>
 				</a>
 			</li>
 
+			<li class="sidebar-item @Html.IsActive("Boletas", "Index,Create,Edit,Details,Delete")">
+				<a class="sidebar-link" asp-controller="Boletas" asp-action="Index">
+					<i class="align-middle" data-feather="tag"></i> <span class="align-middle">Boletas</span>
+				</a>
+			</li>
 			
 		</ul>
 	</div>

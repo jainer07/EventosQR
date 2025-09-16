@@ -15,5 +15,14 @@ namespace eventos_qr.Entity.Enums
             [Description("Eliminada")]
             Eliminada = 4,
         }
+        public enum TipoNotifiacion
+        {
+            [Description("No")]
+            No = 0,
+            [Description("Pendiente pago")]
+            Pendiente = 1,
+            [Description("Entregado")]
+            Entregado = 2,
+        }
     }
 }

@@ -2,9 +2,22 @@
 @model VentaViewModel
 @{
     ViewData["Title"] = "Detalle persona";
-    var estado = Model.EnvioNotificacion ? "SI" : "NO";
+    var estadoNotifica = "NO";
+    var estadoNotificaClase = "warning";
     var estadoVenta = "Pendiente";
     var estadoVentaClase = "info text-dark";
+
+    if (Model.EnvioNotificacion == (int)TipoNotifiacion.Pendiente)
+    {
+        estadoNotifica = "Pendiente pago";
+        estadoNotificaClase = "info text-dark";
+    }
+    else if (Model.EnvioNotificacion == (int)TipoNotifiacion.Entregado)
+    {
+        estadoNotifica = "Boletas entregadas";
+        estadoNotificaClase = "success";
+    }
+
 
     if (Model.EstadoVenta == (int)EstadoVenta.Aplicada)
     {
@@ -35,6 +48,8 @@
                 </div>
                 <div class="card-body">
                     <dl class="row">
+                        <dt class="col-sm-3">Código</dt>
+                        <dd class="col-sm-9">@Model.IdVenta</dd>
                         <dt class="col-sm-3">Nombre evento</dt>
                         <dd class="col-sm-9">@Model.NombreEvento</dd>
                         <dt class="col-sm-3">Documento</dt>
@@ -49,16 +64,17 @@
                         <dd class="col-sm-9">@Model.Cantidad</dd>
                         <dt class="col-sm-3">Total venta</dt>
                         <dd class="col-sm-9">@Model.Total.ToString("N2")</dd>
-                        <dt class="col-sm-3">Noficación envidad?</dt>
-                        <dd class="col-sm-9">@(Model.EnvioNotificacion ? "SI" : "NO")</dd>
+                        <dt class="col-sm-3">Noficación enviada</dt>
+                        <dd class="col-sm-9"><span class="badge bg-@estadoNotificaClase">@estadoNotifica</span></dd>
                         <dt class="col-sm-3">Estado</dt>
                         <dd class="col-sm-9"><span class="badge bg-@estadoVentaClase">@estadoVenta</span></dd>
                         <dt class="col-sm-3">Comprobante pago</dt>
                         <dd class="col-sm-9">@Model.ComprobantePago</dd>
                     </dl>
-                    @if (Model.EstadoVenta == 1)
+                    @if (Model.EstadoVenta == (int)EstadoVenta.Pendiente)
                     {
                         <a asp-action="Edit" asp-route-id="@Model.IdPersona" class="btn btn-warning"><i data-feather="edit"></i> Editar</a>
+                        <a asp-action="Aplicar" asp-route-id="@Model.IdVenta" class="btn btn-success"><i data-feather="shopping-cart"></i> Aplicar</a>
                     }
                     <a asp-action="Index" class="btn btn-secondary"><i data-feather="arrow-left"></i> Volver</a>
                 </div>

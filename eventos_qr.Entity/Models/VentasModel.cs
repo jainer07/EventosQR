@@ -32,7 +32,7 @@ namespace eventos_qr.Entity.Models
         public string ComprobantePago { get; set; } = "";
 
         [Column("EnvioNotificacion")]
-        public bool EnvioNotificacion { get; set; }
+        public int EnvioNotificacion { get; set; }
 
         [ConcurrencyCheck]
         [Column("RowVersion")]

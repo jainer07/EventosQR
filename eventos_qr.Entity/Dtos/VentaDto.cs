@@ -10,7 +10,7 @@
         public decimal Total { get; set; }
         public int EstadoVenta { get; set; } = 1;
         public string ComprobantePago { get; set; } = "";
-        public bool EnvioNotificacion { get; set; }
+        public int EnvioNotificacion { get; set; }
         public long RowVersion { get; set; }
 
         public decimal PrecioUnitario { get; set; }

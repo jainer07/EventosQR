@@ -65,5 +65,15 @@ namespace eventos_qr.BLL.Helpers
             var u = DateTime.SpecifyKind(utc, DateTimeKind.Utc);
             return TimeZoneInfo.ConvertTimeFromUtc(u, TimeZoneColombia.Instance);
         }
+
+        public static string RenderPlantilla(string plantilla, Dictionary<string, string> valores)
+        {
+            foreach (var kv in valores)
+            {
+                plantilla = plantilla.Replace("{" + kv.Key + "}", kv.Value);
+            }
+
+            return plantilla;
+        }
     }
 }

@@ -123,7 +123,7 @@ namespace eventos_qr.BLL.repositories
                             Total = entity.Cantidad * entity.PrecioUnitario,
                             EstadoVenta = entity.EstadoVenta,
                             ComprobantePago = entity.ComprobantePago ?? "",
-                            EnvioNotificacion = false,
+                            EnvioNotificacion = (int)TipoNotifiacion.No,
                             RowVersion = 1
                         };
 
@@ -167,7 +167,7 @@ namespace eventos_qr.BLL.repositories
 
                         var plantilla = _configuration["Mensajes:PagoPendiente"];
                         var plantillaWhatsapp = _configuration["LinkWhatsapp"];
-                        var mensaje = RenderPlantilla(plantilla, new Dictionary<string, string> { ["NOMBRE"] = entity.NombrePersona });
+                        var mensaje = UtilitiesHelper.RenderPlantilla(plantilla, new Dictionary<string, string> { ["NOMBRE"] = entity.NombrePersona });
                         var numeroLimpio = (entity.CelularPersona ?? "").Replace("+", "").Replace(" ", "").Replace("-", "");
                         var numeroFinal = "57" + numeroLimpio;
                         var msg64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(mensaje));
@@ -623,16 +623,6 @@ namespace eventos_qr.BLL.repositories
             }
 
             return respuesta;
-        }
-
-        private string RenderPlantilla(string plantilla, Dictionary<string, string> valores)
-        {
-            foreach (var kv in valores)
-            {
-                plantilla = plantilla.Replace("{" + kv.Key + "}", kv.Value);
-            }
-
-            return plantilla;
         }
     }
 }

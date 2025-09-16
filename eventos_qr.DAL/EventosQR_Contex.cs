@@ -41,10 +41,22 @@ namespace eventos_qr.DAL
                  .WithMany(p => p.Ventas!)
                  .HasForeignKey(x => x.IdPersona);
             });
+
+            modelBuilder.Entity<BoletaModel>(e =>
+            {
+                e.Property(e => e.RowVersion)
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate();
+
+                e.HasOne(x => x.Venta)
+                 .WithMany()
+                 .HasForeignKey(x => x.IdVenta);
+            });
         }
 
         public DbSet<EventoModel> EventoModels { get; private set; }
         public DbSet<PersonaModel> PersonaModels { get; private set; }
         public DbSet<VentasModel> VentasModels { get; set; }
+        public DbSet<BoletaModel> BoletaModels { get; set; }
     }
 }

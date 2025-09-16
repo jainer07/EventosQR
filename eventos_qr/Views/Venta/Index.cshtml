@@ -1,4 +1,5 @@
-﻿@model IEnumerable<VentaViewModel>
+﻿@using static eventos_qr.Entity.Enums.Configuracion
+@model IEnumerable<VentaViewModel>
 @{
     ViewData["Title"] = "Ventas";
     var page = (int)(ViewBag.Page ?? 1);
@@ -94,7 +95,13 @@
                                         <td class="text-end">
                                             <div class="btn-group" role="group">
                                                 <a asp-action="Details" asp-route-id="@v.IdVenta" class="btn btn-sm btn-outline-info" title="Ver"><i data-feather="eye"></i></a>
-                                                @if (v.EstadoVenta == 1)
+                                                @if (v.EstadoVenta == (int)EstadoVenta.Aplicada)
+                                                {
+                                                    <a asp-action="DescargarBoletasZip" asp-route-id="@v.IdVenta" class="btn btn-sm btn-outline-primary" title="Descargar boletas en ZIP">
+                                                        <i data-feather="download"></i>
+                                                    </a>
+                                                }
+                                                @if (v.EstadoVenta == (int)EstadoVenta.Pendiente)
                                                 {
                                                     <a asp-action="Edit" asp-route-id="@v.IdVenta" class="btn btn-sm btn-outline-warning" title="Editar"><i data-feather="edit-2"></i></a>
                                                     <a asp-action="Delete" asp-route-id="@v.IdVenta" class="btn btn-sm btn-outline-danger" title="Eliminar"><i data-feather="trash-2"></i></a>
@@ -131,6 +138,15 @@
     <script>
 
         if (window.feather?.replace) feather.replace();
+
+        // Confirmación para descargas de ZIP
+        document.querySelectorAll('a[asp-action="DescargarBoletasZip"]').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                if (!confirm('¿Está seguro de que desea descargar las boletas en formato ZIP?')) {
+                    e.preventDefault();
+                }
+            });
+        });
 
         (function () {
 

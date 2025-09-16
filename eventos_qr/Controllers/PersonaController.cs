@@ -32,8 +32,6 @@ namespace eventos_qr.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PersonaViewModel model, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(model);
-
             var resultado = await _personaRepository.CrearAsync(_mapper.PersonaDtoMapper(model), ct);
 
             if (resultado.Codigo == 0)
@@ -72,8 +70,6 @@ namespace eventos_qr.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, PersonaViewModel model, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(model);
-
             if (id != model.IdPersona) return BadRequest();
 
             var resultado = await _personaRepository.ActualizarAsync(id, _mapper.PersonaDtoMapper(model), ct);

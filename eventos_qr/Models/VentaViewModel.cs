@@ -36,7 +36,7 @@ namespace eventos_qr.Models
         public string ComprobantePago { get; set; } = "";
 
         [Display(Name = "Envio notificación")]
-        public bool EnvioNotificacion { get; set; }
+        public int EnvioNotificacion { get; set; }
 
         [Display(Name = "Nombre cliente")]
         public string NombrePersona { get; set; } = "";
