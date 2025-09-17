@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Jainer Avila">
+
+    <title>@ViewData["Title"] - eventos</title>
+
+    <!-- AdminKit CSS -->
+    <link rel="stylesheet" href="~/adminkit/css/app.css" asp-append-version="true" />
+</head>
+<body>
+    <main class="d-flex w-100">
+        <div class="container d-flex flex-column">
+            <div class="row vh-100">
+                @RenderBody()
+            </div>
+        </div>
+    </main>
+
+    <!-- AdminKit JS (incluye Bootstrap, Feather, etc.) -->
+    <script src="~/adminkit/js/app.js" asp-append-version="true"></script>
+
+    @* Por si acaso, fuerza el reemplazo de Feather *@
+    <script> if (window.feather && feather.replace) feather.replace(); </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

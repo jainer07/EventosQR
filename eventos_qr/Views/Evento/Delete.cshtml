@@ -1,0 +1,83 @@
+﻿@model EventoViewModel
+@{
+    ViewData["Title"] = "Eliminar evento";
+}
+
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert modern alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    @ViewBag.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Eliminar evento</h5>
+                </div>
+                <div class="card-body">
+                    <p>¿Seguro que deseas eliminar <strong>@Model.Nombre</strong> (@Model.Fecha)?</p>
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="IdEvento" />
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script> if (window.feather?.replace) feather.replace(); </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss alerts after specified time
+            const alerts = document.querySelectorAll('.alert.auto-dismiss[data-auto-dismiss]');
+
+            alerts.forEach(alert => {
+                const dismissTime = parseInt(alert.dataset.autoDismiss) || 5000; // Default 5 seconds
+
+                // Create progress bar
+                const progressBar = document.createElement('div');
+                progressBar.className = 'alert-progress-bar';
+                progressBar.style.cssText = `
+                    animation: shrink ${dismissTime}ms linear forwards;
+                `;
+                alert.appendChild(progressBar);
+
+                // Auto dismiss
+               setTimeout(() => {
+                    if (alert && alert.parentNode) {
+                        alert.classList.remove('show');
+                        setTimeout(() => {
+                            if (alert && alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 150);
+                    }
+                }, dismissTime);
+            });
+
+            document.querySelectorAll('.btn-close[data-bs-dismiss="alert"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const alert = this.closest('.alert');
+                    if (alert) {
+                        alert.classList.remove('show');
+                        setTimeout(() => {
+                            if (alert && alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 150);
+                    }
+                });
+            });
+        });
+    </script>
+}

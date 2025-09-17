@@ -1,0 +1,65 @@
+﻿@model IEnumerable<EventoViewModel>
+
+@{
+    ViewData["Title"] = "Eventos";
+}
+
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Eventos</h5>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i data-feather="plus"></i> Nuevo
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Fecha</th>
+                                    <th class="text-end">Capacidad</th>
+                                    <th class="text-end">Vendidas</th>
+                                    <th class="text-end">Precio</th>
+                                    <th style="width: 180px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var e in Model)
+                                {
+                                    <tr>
+                                        <td>@e.Nombre</td>
+                                        <td>@e.Fecha</td>
+                                        <td class="text-end">@e.Capacidad</td>
+                                        <td class="text-end">@e.Vendidas</td>
+                                        <td class="text-end">@e.PrecioUnitario.ToString("C")</td>
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@e.IdEvento" class="btn btn-info btn-sm" title="Detalle">
+                                                    <i data-feather="eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@e.IdEvento" class="btn btn-warning btn-sm" title="Editar">
+                                                    <i data-feather="edit-2"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@e.IdEvento" class="btn btn-danger btn-sm" title="Eliminar">
+                                                    <i data-feather="trash-2"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script> if (window.feather?.replace) feather.replace(); </script>
+}

@@ -1,0 +1,40 @@
+﻿@model PersonaViewModel
+@{
+    ViewData["Title"] = "Detalle persona";
+    var estado = Model.Estado ? "Activo" : "Inactivo";
+}
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Detalle persona</h5>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.IdPersona" class="btn btn-warning">Editar</a>
+                        <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Nombre</dt>
+                        <dd class="col-sm-9">@Model.Nombres @Model.Apellidos</dd>
+                        <dt class="col-sm-3">Documento</dt>
+                        <dd class="col-sm-9">@Model.CodigoTipoDocumento - @Model.NumeroDocumento</dd>
+                        <dt class="col-sm-3">Celular</dt>
+                        <dd class="col-sm-9">@Model.Celular</dd>
+                        <dt class="col-sm-3">Correo</dt>
+                        <dd class="col-sm-9">@Model.Correo</dd>
+                        <dt class="col-sm-3">Estado</dt>
+                        <dd class="col-sm-9"><span class="badge bg-@(Model.Estado ? "success" : "secondary")">@(Model.Estado ? "Activo" : "Inactivo")</span></dd>
+                    </dl>
+                    <a asp-action="Edit" asp-route-id="@Model.IdPersona" class="btn btn-warning"><i data-feather="edit"></i> Editar</a>
+                    <a asp-action="Index" class="btn btn-secondary"><i data-feather="arrow-left"></i> Volver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script> if (window.feather?.replace) feather.replace(); </script>
+}
