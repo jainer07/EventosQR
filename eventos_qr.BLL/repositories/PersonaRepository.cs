@@ -122,7 +122,7 @@ namespace eventos_qr.BLL.repositories
                 return respuesta;
             }
 
-            entity.FechaRegistro = DateTime.Now;
+            entity.FechaRegistro = DateTime.UtcNow;
             var perosna = _mapper.PersonaModelMapper(entity);
 
             try

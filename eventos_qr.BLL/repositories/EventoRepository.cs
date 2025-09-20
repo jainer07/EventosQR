@@ -1,7 +1,8 @@
 ﻿using eventos_qr.BLL.Contracts;
+using eventos_qr.BLL.Helpers;
 using eventos_qr.BLL.Mapper;
-using eventos_qr.Entity.Dtos;
 using eventos_qr.DAL.Queries;
+using eventos_qr.Entity.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace eventos_qr.BLL.repositories
@@ -23,6 +24,8 @@ namespace eventos_qr.BLL.repositories
                 if (evento == null)
                     return null;
 
+                evento.Fecha = UtilitiesHelper.ToBogotaFromUtc(evento.Fecha);
+
                 return _mapper.EventoDtoMapper(evento);
             }
             catch (Exception ex)
@@ -37,6 +40,10 @@ namespace eventos_qr.BLL.repositories
             try
             {
                 var eventos = await _eventoQuery.ListarAsync();
+                foreach (var item in eventos)
+                {
+                    item.Fecha = UtilitiesHelper.ToBogotaFromUtc(item.Fecha);
+                }
 
                 return _mapper.EventoDtoMapper(eventos);
             }
