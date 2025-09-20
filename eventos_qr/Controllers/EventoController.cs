@@ -1,4 +1,5 @@
 ﻿using eventos_qr.BLL.Contracts;
+using eventos_qr.BLL.Helpers;
 using eventos_qr.Mapper;
 using eventos_qr.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,10 @@ namespace eventos_qr.Controllers
             if (model.Vendidas > model.Capacidad)
                 ModelState.AddModelError(nameof(model.Vendidas), "Vendidas no puede superar la Capacidad.");
 
-            await _eventoRepository.CrearAsync(_mapper.EventoDtoMapper(model));
+            var dto = _mapper.EventoDtoMapper(model);
+            dto.Fecha = UtilitiesHelper.ToUtcFromBogota(model.Fecha);
+
+            await _eventoRepository.CrearAsync(dto);
 
             return RedirectToAction(nameof(Index));
         }
@@ -67,7 +71,10 @@ namespace eventos_qr.Controllers
             if (model.Vendidas > model.Capacidad)
                 ModelState.AddModelError(nameof(model.Vendidas), "Vendidas no puede superar la Capacidad.");
 
-            var result = await _eventoRepository.ActualizarAsync(id, _mapper.EventoDtoMapper(model));
+            var dto = _mapper.EventoDtoMapper(model);
+            dto.Fecha = UtilitiesHelper.ToUtcFromBogota(model.Fecha);
+
+            var result = await _eventoRepository.ActualizarAsync(id, dto);
 
             if (result)
                 return RedirectToAction(nameof(Index));
@@ -78,7 +85,7 @@ namespace eventos_qr.Controllers
             if (fresh != null)
             {
                 var vm = _mapper.EventoViewModelMapper(fresh);
-                // Copia los campos editados del usuario en vm si quieres que no se pierdan
+                
                 vm.Nombre = model.Nombre;
                 vm.Fecha = model.Fecha;
                 vm.Capacidad = model.Capacidad;
