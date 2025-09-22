@@ -25,8 +25,14 @@ namespace eventos_qr.Entity.Models
         [Column("FechaGeneracionUtc")]
         public DateTime FechaGeneracionUtc { get; set; }
 
+        [Column("FechaUsoUtc")]
+        public DateTime? FechaUsoUtc { get; set; }
+
         [Column("Estado")]
         public bool Estado { get; set; }
+
+        [Column("OperatorId")]
+        public long? OperatorId { get; set; }
 
         [Column("RowVersion")]
         public long RowVersion { get; set; } = 1;

@@ -46,7 +46,7 @@ namespace eventos_qr.DAL
             {
                 e.Property(e => e.RowVersion)
                     .IsConcurrencyToken()
-                    .ValueGeneratedOnAddOrUpdate();
+                    .ValueGeneratedNever();
 
                 e.HasOne(x => x.Venta)
                  .WithMany()

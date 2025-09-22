@@ -1,20 +1,25 @@
 ﻿using eventos_qr.BLL.Contracts;
 using eventos_qr.BLL.Helpers;
+using eventos_qr.BLL.Mapper;
 using eventos_qr.DAL;
+using eventos_qr.DAL.Queries;
 using eventos_qr.Entity.Dtos;
 using eventos_qr.Entity.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 using SkiaSharp;
 using System.IO.Compression;
 using static eventos_qr.Entity.Enums.Configuracion;
 
 namespace eventos_qr.BLL.repositories
 {
-    public class BoletaRepository(EventosQR_Contex ctx, IConfiguration configuration) : IBoletaRepository
+    public class BoletaRepository(EventosQR_Contex ctx, BoletaQueryService boletaQuery, IConfiguration configuration) : IBoletaRepository
     {
         private readonly EventosQR_Contex _ctx = ctx;
+        private readonly BoletaQueryService _boletaQuery = boletaQuery;
         private readonly IConfiguration _configuration = configuration;
+        private readonly BoletaMapper _mapper = new();
 
         public async Task<RespuestaType> AplicarVentaAsync(long idVenta, bool aplicar, CancellationToken ct)
         {
@@ -108,6 +113,112 @@ namespace eventos_qr.BLL.repositories
             });
 
             return resp;
+        }
+
+        public async Task<BoletaDto?> FindByCodeAsync(string code, CancellationToken ct)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(code))
+                    return null;
+
+                var boleta = await _boletaQuery.FindByCodeAsync(code, ct);
+
+
+                if (boleta == null)
+                    return null;
+
+                boleta.FechaGeneracionUtc = UtilitiesHelper.ToBogotaFromUtc(boleta.FechaGeneracionUtc);
+                boleta.FechaUsoUtc = boleta.FechaUsoUtc != null ? UtilitiesHelper.ToBogotaFromUtc(boleta.FechaUsoUtc.Value) : null;
+
+                if (boleta.Venta != null)
+                {
+                    boleta.Venta.FechaUtc = UtilitiesHelper.ToBogotaFromUtc(boleta.Venta.FechaUtc);
+                    if (boleta.Venta.Evento != null)
+                    {
+                        boleta.Venta.Evento.Fecha = UtilitiesHelper.ToBogotaFromUtc(boleta.Venta.Evento.Fecha);
+                    }
+                }
+
+                return _mapper.BoletaDtoMapper(boleta);
+            }
+            catch (Exception ex)
+            {
+                // Aquí podrías registrar el error en un log si es necesario
+                throw new ApplicationException($"Error al obtener la boleta con ID {code}: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<(int codigo, string mensaje, BoletaDto? boleta)> MarkAsUsedAsync(string code, long? operatorId, CancellationToken ct)
+        {
+            var boleta = await FindByCodeAsync(code, ct);
+
+            if (boleta is null) return (99, "Boleta no encontrada", null);
+
+            if (!boleta.Estado)
+                return (10, "Boleta ya fue usada anteriormente", boleta);
+
+            var entity = _mapper.BoletaModelMapper(boleta);
+            // Marcar uso
+            entity.Estado = false;
+            entity.FechaUsoUtc = DateTime.UtcNow;
+            entity.OperatorId = operatorId;
+
+            var original = boleta.RowVersion;
+            entity.RowVersion = original + 1;
+
+            _ctx.BoletaModels.Attach(entity);
+            _ctx.Entry(entity).Property(e => e.Estado).IsModified = true;
+            _ctx.Entry(entity).Property(e => e.FechaUsoUtc).IsModified = true;
+            _ctx.Entry(entity).Property(e => e.OperatorId).IsModified = true;
+            _ctx.Entry(entity).Property("RowVersion").OriginalValue = original;
+            _ctx.Entry(entity).Property(e => e.RowVersion).IsModified = true;
+
+            try
+            {
+                await _ctx.SaveChangesAsync(ct);
+
+                boleta.RowVersion = entity.RowVersion;
+                boleta.FechaUsoUtc = UtilitiesHelper.ToBogotaFromUtc(entity.FechaUsoUtc.Value);
+                return (0, "Boleta usada correctamente", boleta);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return (12, "Conflicto de concurrencia. Intenta de nuevo.", null);
+            }
+        }
+
+        public async Task<(int codigo, string mensaje)> RevertUseAsync(string code, CancellationToken ct)
+        {
+            var boleta = await FindByCodeAsync(code, ct);
+            if (boleta is null) return (99, "Boleta no encontrada");
+
+            if (boleta.Estado)
+                return (13, "La boleta no está en estado 'Usada'");
+
+            boleta.Estado = true;
+            boleta.FechaUsoUtc = null;
+            boleta.OperatorId = null;
+
+            var entity = _mapper.BoletaModelMapper(boleta);
+            entity.RowVersion += 1;
+
+            _ctx.BoletaModels.Attach(entity);
+            _ctx.Entry(entity).Property(e => e.Estado).IsModified = true;
+            _ctx.Entry(entity).Property(e => e.FechaUsoUtc).IsModified = true;
+            _ctx.Entry(entity).Property(e => e.OperatorId).IsModified = true;
+            _ctx.Entry(entity).Property("RowVersion").OriginalValue = boleta.RowVersion;
+            _ctx.Entry(entity).Property(e => e.RowVersion).IsModified = true;
+
+            try
+            {
+                await _ctx.SaveChangesAsync(ct);
+                return (0, "Uso revertido");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return (12, "Conflicto de concurrencia. Intenta de nuevo.");
+            }
         }
 
         private async Task RechazarVenta(VentasModel venta, CancellationToken ct)

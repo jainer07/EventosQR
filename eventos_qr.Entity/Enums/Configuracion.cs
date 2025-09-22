@@ -15,6 +15,17 @@ namespace eventos_qr.Entity.Enums
             [Description("Eliminada")]
             Eliminada = 4,
         }
+
+        public enum EstadoBoleta
+        {
+            [Description("Activa")]
+            Activa = 1,
+            [Description("Usada")]
+            Usada = 2,
+            [Description("Anulada")]
+            Anulada = 3
+        }
+
         public enum TipoNotifiacion
         {
             [Description("No")]
