@@ -12,7 +12,7 @@ namespace eventos_qr.Infrastructure
                 opt.AddPolicy("default", p => p
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .WithOrigins("https://kombat-fight-api.up.railway.app"));
+                    .WithOrigins("https://kombat-fight-entrada.up.railway.app"));
             });
 
             // Swagger (lo encendemos solo en Dev en el pipeline)
